@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData">
+    <serverData>
+      <paths name="weiweiwu@127.0.0.1:2121">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/seu_share/home/weiweiwu/yt.zhang/home/experience/CornerNet-Lite" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
