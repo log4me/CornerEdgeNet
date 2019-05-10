@@ -222,3 +222,49 @@ class CornerNet_Loss(nn.Module):
 
         loss = (focal_loss + pull_loss + push_loss + off_loss) / max(len(tl_heats), 1)
         return loss.unsqueeze(0)
+
+class CornerEdgeNet_Loss(nn.Module):
+    def __init__(self, offset_weight=1, edge_weight=1, focal_loss=_focal_loss):
+        super(CornerEdgeNet_Loss, self).__init__()
+        self.offset_weight = offset_weight
+        self.edge_weight = edge_weight
+        self.focal_loss = focal_loss
+
+    def _off_loss(self, preds, gt, mask):
+        off_loss = .0
+        for pred in preds:
+            off_loss += _off_loss(pred, gt, mask)
+        return off_loss
+
+    def _edge_loss(self, preds, gt, mask):
+        edge_loss = .0
+        for pred in preds:
+            edge_loss += _off_loss(pred, gt, mask)
+        return edge_loss
+
+    def forward(self, outs, targets):
+        tl_props, tl_offsets, tl_edges = outs
+        gt_tl_props, gt_tl_offsets, gt_tl_edges, gt_tl_masks = targets
+        tl_edges = tl_edges.reshape(gt_tl_edges.shape)
+        tl_offsets = tl_offsets.reshape(gt_tl_offsets.shape)
+
+        # focal loss of classifier
+        focal_loss = .0
+        tl_props = [_sigmoid(t) for t in tl_props]
+
+        focal_loss += self.focal_loss(tl_props, gt_tl_props)
+
+        # loss of offset
+        off_loss = .0
+        off_loss += self._off_loss(tl_offsets, gt_tl_offsets, gt_tl_masks)
+
+        off_loss *= self.offset_weight
+
+        # loss of edge
+        edge_loss = .0
+        edge_loss += self._edge_loss(tl_edges, gt_tl_edges, gt_tl_masks)
+
+        edge_loss *= self.edge_weight
+        loss = (focal_loss + off_loss + edge_loss) / max(len(tl_props), 1)
+        return loss.unsqueeze(0)
+

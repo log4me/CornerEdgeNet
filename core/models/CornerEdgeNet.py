@@ -4,7 +4,7 @@ import torch.nn as nn
 from .py_utils import TopPool, BottomPool, LeftPool, RightPool
 
 from .py_utils.utils import convolution, residual, corner_pool
-from .py_utils.losses import CornerNet_Loss
+from .py_utils.losses import CornerNet_Loss, CornerEdgeNet_Loss
 from .py_utils.modules import hg_module, hg
 
 
@@ -172,4 +172,4 @@ class model(hg_net_edge):
             hgs, tl_modules, tl_props, tl_offsets, tl_whs
         )
 
-        self.loss = CornerNet_Loss(pull_weight=1e-1, push_weight=1e-1)
+        self.loss = CornerEdgeNet_Loss(pull_weight=1e-1, push_weight=1e-1)

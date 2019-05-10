@@ -46,14 +46,18 @@ def cornernet(system_configs, db, k_ind, data_aug, debug):
     gaussian_iou  = db.configs["gaussian_iou"]
     gaussian_rad  = db.configs["gaussian_radius"]
 
+    # TODO. What's the meanning of max_tag_len?
     max_tag_len = 128
 
     # allocating memory
     images      = np.zeros((batch_size, 3, input_size[0], input_size[1]), dtype=np.float32)
+    # heatmap
     tl_heatmaps = np.zeros((batch_size, categories, output_size[0], output_size[1]), dtype=np.float32)
     br_heatmaps = np.zeros((batch_size, categories, output_size[0], output_size[1]), dtype=np.float32)
+    # offset
     tl_regrs    = np.zeros((batch_size, max_tag_len, 2), dtype=np.float32)
     br_regrs    = np.zeros((batch_size, max_tag_len, 2), dtype=np.float32)
+    # meaning the index of offset
     tl_tags     = np.zeros((batch_size, max_tag_len), dtype=np.int64)
     br_tags     = np.zeros((batch_size, max_tag_len), dtype=np.int64)
     tag_masks   = np.zeros((batch_size, max_tag_len), dtype=np.uint8)
@@ -102,8 +106,11 @@ def cornernet(system_configs, db, k_ind, data_aug, debug):
         for ind, detection in enumerate(detections):
             category = int(detection[-1]) - 1
 
+            # top left point
             xtl, ytl = detection[0], detection[1]
+            # bottom right point
             xbr, ybr = detection[2], detection[3]
+
 
             fxtl = (xtl * width_ratio)
             fytl = (ytl * height_ratio)
@@ -116,6 +123,7 @@ def cornernet(system_configs, db, k_ind, data_aug, debug):
             ybr = int(fybr)
 
             if gaussian_bump:
+                # bbox width, bbox height
                 width  = detection[2] - detection[0]
                 height = detection[3] - detection[1]
 
@@ -123,6 +131,7 @@ def cornernet(system_configs, db, k_ind, data_aug, debug):
                 height = math.ceil(height * height_ratio)
 
                 if gaussian_rad == -1:
+
                     radius = gaussian_radius((height, width), gaussian_iou)
                     radius = max(0, int(radius))
                 else:
@@ -137,6 +146,7 @@ def cornernet(system_configs, db, k_ind, data_aug, debug):
             tag_ind = tag_lens[b_ind]
             tl_regrs[b_ind, tag_ind, :] = [fxtl - xtl, fytl - ytl]
             br_regrs[b_ind, tag_ind, :] = [fxbr - xbr, fybr - ybr]
+            # tag mean the index of point (xtl, ytl) after reshape as a vector
             tl_tags[b_ind, tag_ind] = ytl * output_size[1] + xtl
             br_tags[b_ind, tag_ind] = ybr * output_size[1] + xbr
             tag_lens[b_ind] += 1

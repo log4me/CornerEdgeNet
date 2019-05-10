@@ -26,7 +26,7 @@ def _tranpose_and_gather_feat(feat, ind):
 
 def _topk(scores, K=20):
     batch, cat, height, width = scores.size()
-
+    # score of shape(B, C, H, W)
     topk_scores, topk_inds = torch.topk(scores.view(batch, -1), K)
 
     topk_clses = (topk_inds / (height * width)).int()
@@ -64,6 +64,7 @@ def _decode(
         br_xs_binds = (br_xs == width  - 1)
 
     if tl_regr is not None and br_regr is not None:
+        # (N, 2, H, W)
         tl_regr = _tranpose_and_gather_feat(tl_regr, tl_inds)
         tl_regr = tl_regr.view(batch, K, 1, 2)
         br_regr = _tranpose_and_gather_feat(br_regr, br_inds)

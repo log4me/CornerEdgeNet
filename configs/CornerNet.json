@@ -1,7 +1,7 @@
 {
     "system": {
         "dataset": "COCO",
-        "batch_size": 49,
+        "batch_size": 9,
         "sampling_function": "cornernet",
 
         "train_split": "trainval",
@@ -19,9 +19,9 @@
         "stepsize": 450000,
         "snapshot": 5000,
 
-        "chunk_sizes": [4, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        "chunk_sizes": [4, 5 ],
 
-        "data_dir": "./data"
+        "data_dir": "./train/data"
     },
     
     "db": {

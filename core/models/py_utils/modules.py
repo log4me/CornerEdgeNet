@@ -103,15 +103,19 @@ class hg_net(nn.Module):
 
         self.hg = hg
 
+        # corner pool
         self.tl_modules = tl_modules
         self.br_modules = br_modules
 
+        # heatmaps
         self.tl_heats = tl_heats
         self.br_heats = br_heats
 
+        # embeddings
         self.tl_tags = tl_tags
         self.br_tags = br_tags
-        
+
+        # offsets
         self.tl_offs = tl_offs
         self.br_offs = br_offs
 

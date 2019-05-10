@@ -48,6 +48,7 @@ class model(hg_net):
 
         hgs = hg(pre, hg_mods, cnvs, inters, cnvs_, inters_) 
 
+        # corner pool
         tl_modules = nn.ModuleList([corner_pool(256, TopPool, LeftPool) for _ in range(stacks)])
         br_modules = nn.ModuleList([corner_pool(256, BottomPool, RightPool) for _ in range(stacks)])
 
@@ -56,7 +57,7 @@ class model(hg_net):
         for tl_heat, br_heat in zip(tl_heats, br_heats):
             torch.nn.init.constant_(tl_heat[-1].bias, -2.19)
             torch.nn.init.constant_(br_heat[-1].bias, -2.19)
-
+        # tags meant embeddings
         tl_tags = nn.ModuleList([self._pred_mod(1) for _ in range(stacks)])
         br_tags = nn.ModuleList([self._pred_mod(1) for _ in range(stacks)])
 

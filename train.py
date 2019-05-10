@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument("--iter", dest="start_iter",
                         help="train at iteration i",
                         default=0, type=int)
-    parser.add_argument("--workers", default=4, type=int)
+    parser.add_argument("--workers", default=1, type=int)
     parser.add_argument("--initialize", action="store_true")
 
     parser.add_argument("--distributed", action="store_true")
@@ -43,7 +43,7 @@ def parse_args():
                         help="url used to set up distributed training")
     parser.add_argument("--dist-backend", default="nccl", type=str)
 
-    args = parser.parse_args()
+    args = parser.parse_args(['CornerNet'])
     return args
 
 def prefetch_data(system_config, db, queue, sample_data, data_aug):
@@ -161,12 +161,12 @@ def train(training_dbs, validation_db, system_config, model, args):
     nnet.train_mode()
     with stdout_to_tqdm() as save_stdout:
         for iteration in tqdm(range(start_iter + 1, max_iteration + 1), file=save_stdout, ncols=80):
-            training = pinned_training_queue.get(block=True)
-            training_loss = nnet.train(**training)
-
-            if display and iteration % display == 0:
-                print("Process {}: training loss at iteration {}: {}".format(rank, iteration, training_loss.item()))
-            del training_loss
+            # training = pinned_training_queue.get(block=True)
+            # training_loss = nnet.train(**training)
+            #
+            # if display and iteration % display == 0:
+            #     print("Process {}: training loss at iteration {}: {}".format(rank, iteration, training_loss.item()))
+            # del training_loss
 
             if val_iter and validation_db.db_inds.size and iteration % val_iter == 0:
                 nnet.eval_mode()
